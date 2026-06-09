@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Facility Inspection</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh}
+.app{padding:1rem;max-width:480px;margin:0 auto}
+.card{background:#fff;border:1px solid #e5e5e0;border-radius:12px;margin-bottom:.75rem;overflow:hidden}
+.ch{padding:12px 1rem;border-bottom:1px solid #e5e5e0;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.cht{font-size:15px;font-weight:500;flex:1}
+.chr{display:flex;align-items:center;gap:8px}
+.chv{font-size:14px;color:#9ca3af;transition:transform .2s}
+.chv.open{transform:rotate(180deg)}
+.badge{font-size:11px;padding:3px 8px;border-radius:8px;font-weight:500}
+.bp{background:#d1fae5;color:#065f46}
+.bf{background:#fee2e2;color:#991b1b}
+.bn{background:#f3f4f6;color:#6b7280}
+.sb{display:none}
+.sb.open{display:block}
+.item{padding:10px 1rem;border-bottom:1px solid #f0f0ea}
+.item:last-child{border-bottom:none}
+.item-top{display:flex;align-items:flex-start;gap:8px}
+.il{font-size:13px;flex:1;padding-top:1px;color:#1a1a1a}
+.tg{display:flex;gap:5px;margin-top:7px}
+.t{flex:1;padding:8px 0;font-size:12px;font-weight:500;border-radius:8px;border:1px solid #d1d5db;background:#f9fafb;color:#6b7280;cursor:pointer;text-align:center;transition:all .15s}
+.t.pass.on{background:#d1fae5;color:#065f46;border-color:transparent}
+.t.fail.on{background:#fee2e2;color:#991b1b;border-color:transparent}
+.t.na.on{background:#f3f4f6;color:#374151;border-color:#9ca3af}
+.pr{display:flex;gap:5px;margin-top:7px}
+.p{padding:5px 10px;font-size:11px;border-radius:8px;border:1px solid #d1d5db;background:transparent;color:#6b7280;cursor:pointer;transition:all .15s}
+.p.high.on{background:#fee2e2;color:#991b1b;border-color:transparent}
+.p.med.on{background:#fef3c7;color:#92400e;border-color:transparent}
+.p.low.on{background:#d1fae5;color:#065f46;border-color:transparent}
+.det-area{margin-top:8px}
+.det-tog{display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 0}
+.det-tog-lbl{font-size:12px;color:#6b7280}
+.det-tog-ic{font-size:13px;color:#9ca3af;transition:transform .15s}
+.det-tog-ic.open{transform:rotate(180deg)}
+.det-body{display:none;margin-top:6px}
+.det-body.open{display:block}
+.nt{width:100%;font-size:12px;padding:7px 9px;border:1px solid #d1d5db;border-radius:8px;background:#f9fafb;color:#1a1a1a;resize:none;font-family:inherit;margin-bottom:8px}
+.photo-strip{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.pt{position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;border:1px solid #e5e5e0}
+.pt img{width:100%;height:100%;object-fit:cover;display:block}
+.pdel{position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.55);border:none;border-radius:4px;color:#fff;font-size:11px;cursor:pointer;padding:1px 4px;line-height:1.4}
+.apb{display:flex;align-items:center;gap:5px;padding:6px 10px;font-size:12px;border:1px dashed #d1d5db;border-radius:8px;background:transparent;color:#6b7280;cursor:pointer}
+.apb:hover{background:#f9fafb}
+.dot{width:7px;height:7px;border-radius:50%;background:#f59e0b;flex-shrink:0;margin-top:4px;display:none}
+.dot.on{display:block}
+.fi{width:100%;font-size:13px;padding:8px 10px;border:1px solid #d1d5db;border-radius:8px;background:#f9fafb;color:#1a1a1a;font-family:inherit}
+.fl{font-size:11px;color:#6b7280;display:block;margin-bottom:3px}
+.uh{padding:8px 1rem;background:#fafaf8;border-bottom:1px solid #e5e5e0}
+.rb{font-size:11px;color:#9ca3af;background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:4px}
+.rb:hover{color:#ef4444;background:#fee2e2}
+.ab{width:100%;padding:10px;font-size:13px;border:1.5px dashed #d1d5db;border-radius:8px;background:transparent;color:#6b7280;cursor:pointer;transition:all .15s}
+.ab:hover{background:#f9fafb;border-color:#9ca3af}
+.sr{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:.75rem}
+.mt{background:#fff;border:1px solid #e5e5e0;border-radius:10px;padding:12px 1rem}
+.ml{font-size:11px;color:#6b7280;margin-bottom:4px}
+.mv{font-size:24px;font-weight:500}
+.ms{font-size:11px;color:#6b7280;margin-top:2px}
+.pmf{padding:10px 1rem;border-bottom:1px solid #e5e5e0;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pmf:last-child{border-bottom:none}
+.pml{grid-column:1/-1;font-size:13px;font-weight:500;margin-bottom:2px}
+.rpt-block{padding:12px 1rem;border-bottom:1px solid #e5e5e0}
+.rpt-block:last-child{border-bottom:none}
+.rpt-title{font-size:13px;font-weight:500;margin-bottom:10px;color:#1a1a1a}
+.rpt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rpt-full{grid-column:1/-1}
+.ar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.75rem}
+.pb{width:100%;padding:13px;font-size:14px;font-weight:500;border-radius:10px;border:none;background:#1a1a1a;color:#fff;cursor:pointer}
+.pb:hover{background:#374151}
+.xb{padding:13px;font-size:14px;font-weight:500;border-radius:10px;border:1px solid #d1d5db;background:#fff;color:#374151;cursor:pointer}
+.xb:hover{background:#f9fafb}
+.br2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.5rem}
+.sec-group-label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;padding:4px 0 6px;margin-top:.25rem}
+select.fi{appearance:auto}
+@media print{
+  body{background:#fff}
+  .ab,.rb,.pb,.xb,.t:not(.on),.p:not(.on),.apb,.det-tog,.pdel{display:none!important}
+  .app{max-width:100%;padding:0}
+  .card{border:1px solid #ccc;break-inside:avoid;margin-bottom:.5rem}
+  .sb{display:block!important}
+  .det-body{display:block!important}
+  .pt{width:100px;height:100px}
+  .sec-group-label{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="card">
+  <div style="padding:12px 1rem;border-bottom:1px solid #e5e5e0;display:flex;align-items:center;gap:8px">
+    <i class="ti ti-building" style="font-size:18px;color:#6b7280"></i>
+    <span style="font-size:15px;font-weight:500">Facility inspection</span>
+  </div>
+  <div style="padding:12px 1rem;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    <div style="grid-column:1/-1"><label class="fl">Building / location</label><input class="fi" id="building" type="text" placeholder="Building name or address"></div>
+    <div><label class="fl">Inspector</label><input class="fi" id="inspector" type="text" placeholder="Your name" oninput="updateSig()"></div>
+    <div><label class="fl">Date</label><input class="fi" id="idate" type="date" oninput="updateSig()"></div>
+  </div>
+</div>
+
+<div class="sr">
+  <div class="mt"><div class="ml">Overall score</div><div class="mv" id="spct">—</div><div class="ms" id="scnt">No items rated</div></div>
+  <div class="mt"><div class="ml">Issues flagged</div><div class="mv" id="icnt">0</div><div class="ms" id="hcnt">0 high priority</div></div>
+</div>
+
+<div class="sec-group-label">— Exterior approach</div>
+<div id="static-sections"></div>
+
+<div class="sec-group-label">— Mechanical &amp; systems</div>
+<div class="card">
+  <div class="ch" onclick="toggleCard('pm-body','pm-chev')">
+    <i class="ti ti-calendar-check" style="font-size:18px;color:#6b7280"></i>
+    <span class="cht">HVAC preventative maintenance log</span>
+    <div class="chr"><i class="ti ti-chevron-down chv" id="pm-chev"></i></div>
+  </div>
+  <div class="sb" id="pm-body">
+    <div id="pm-units"><div style="padding:10px 1rem;font-size:13px;color:#6b7280">No PM records added.</div></div>
+    <div style="padding:8px 1rem 12px"><button class="ab" onclick="addPM()"><i class="ti ti-plus"></i> Add HVAC unit PM record</button></div>
+  </div>
+</div>
+
+<div id="ac-sections"></div>
+<div id="elec-sections"></div>
+<div id="elev-sections"></div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:.75rem">
+  <button class="ab" onclick="addUnit('ac')"><i class="ti ti-plus"></i> AC unit</button>
+  <button class="ab" onclick="addUnit('elec')"><i class="ti ti-plus"></i> Elec. room</button>
+  <button class="ab" onclick="addUnit('elev')"><i class="ti ti-plus"></i> Elevator</button>
+</div>
+
+<div class="sec-group-label">— Compliance reports</div>
+<div class="card">
+  <div class="ch" onclick="toggleCard('reports-body','reports-chev')">
+    <i class="ti ti-file-certificate" style="font-size:18px;color:#6b7280"></i>
+    <span class="cht">Inspection reports &amp; certifications</span>
+    <div class="chr"><i class="ti ti-chevron-down chv" id="reports-chev"></i></div>
+  </div>
+  <div class="sb" id="reports-body">
+
+    <div class="rpt-block">
+      <div class="rpt-title"><i class="ti ti-flame" style="font-size:14px;vertical-align:-2px;margin-right:5px;color:#6b7280"></i>Fire alarm system</div>
+      <div class="rpt-grid">
+        <div><label class="fl">Last inspection date</label><input class="fi" style="font-size:12px;padding:6px 8px" type="date" id="rpt-fa-date"></div>
+        <div><label class="fl">Inspector / vendor</label><input class="fi" style="font-size:12px;padding:6px 8px" type="text" placeholder="Company name" id="rpt-fa-vendor"></div>
+        <div><label class="fl">Next due date</label><input class="fi" style="font-size:12px;padding:6px 8px" type="date" id="rpt-fa-next"></div>
+        <div><label class="fl">Report on file</label>
+          <select class="fi" style="font-size:12px;padding:6px 8px" id="rpt-fa-onfile">
+            <option value="">Select...</option>
+            <option>Yes</option><option>No</option><option>Requested</option>
+          </select>
+        </div>
+        <div class="rpt-full"><label class="fl">Deficiencies / open items</label><textarea class="nt" rows="2" id="rpt-fa-notes" placeholder="Any deficiencies noted on the report, open work orders, or follow-up required..." style="margin-bottom:0"></textarea></div>
+      </div>
+    </div>
+
+    <div class="rpt-block">
+      <div class="rpt-title"><i class="ti ti-droplet" style="font-size:14px;vertical-align:-2px;margin-right:5px;color:#6b7280"></i>Fire sprinkler system</div>
+      <div class="rpt-grid">
+        <div><label class="fl">Last inspection date</label><input class="fi" style="font-size:12px;padding:6px 8px" type="date" id="rpt-sp-date"></div>
+        <div><label class="fl">Inspector / vendor</label><input class="fi" style="font-size:12px;padding:6px 8px" type="text" placeholder="Company name" id="rpt-sp-vendor"></div>
+        <div><label class="fl">Next due date</label><input class="fi" style="font-size:12px;padding:6px 8px" type="date" id="rpt-sp-next"></div>
+        <div><label class="fl">Report on file</label>
+          <select class="fi" style="font-size:12px;padding:6px 8px" id="rpt-sp-onfile">
+            <option value="">Select...</option>
+            <option>Yes</option><option>No</option><option>Requested</option>
+          </select>
+        </div>
+        <div><label class="fl">Last 5-year trip test</label><input class="fi" style="font-size:12px;padding:6px 8px" type="date" id="rpt-sp-trip"></div>
+        <div><label class="fl">Next 5-year trip test due</label><input class="fi" style="font-size:12px;padding:6px 8px" type="date" id="rpt-sp-tripnext"></div>
+        <div class="rpt-full"><label class="fl">Deficiencies / open items</label><textarea class="nt" rows="2" id="rpt-sp-notes" placeholder="Any deficiencies noted on the report, open work orders, or follow-up required..." style="margin-bottom:0"></textarea></div>
+      </div>
+    </div>
+
+    <div class="rpt-block">
+      <div class="rpt-title"><i class="ti ti-elevator" style="font-size:14px;vertical-align:-2px;margin-right:5px;color:#6b7280"></i>Elevator inspection certificate</div>
+      <div class="rpt-grid">
+        <div><label class="fl">Last inspection date</label><input class="fi" style="font-size:12px;padding:6px 8px" type="date" id="rpt-el-date"></div>
+        <div><label class="fl">Inspector / authority</label><input class="fi" style="font-size:12px;padding:6px 8px" type="text" placeholder="State / third-party inspector" id="rpt-el-vendor"></div>
+        <div><label class="fl">Certificate expiration</label><input class="fi" style="font-size:12px;padding:6px 8px" type="date" id="rpt-el-next"></div>
+        <div><label class="fl">Certificate posted in cab</label>
+          <select class="fi" style="font-size:12px;padding:6px 8px" id="rpt-el-posted">
+            <option value="">Select...</option>
+            <option>Yes</option><option>No</option><option>N/A</option>
+          </select>
+        </div>
+        <div class="rpt-full"><label class="fl">Violations / open items</label><textarea class="nt" rows="2" id="rpt-el-notes" placeholder="Any violations or corrections required from last inspection..." style="margin-bottom:0"></textarea></div>
+      </div>
+    </div>
+
+    <div class="rpt-block">
+      <div class="rpt-title"><i class="ti ti-droplet-half-2" style="font-size:14px;vertical-align:-2px;margin-right:5px;color:#6b7280"></i>Backflow preventer test</div>
+      <div class="rpt-grid">
+        <div><label class="fl">Last test date</label><input class="fi" style="font-size:12px;padding:6px 8px" type="date" id="rpt-bf-date"></div>
+        <div><label class="fl">Tester / vendor</label><input class="fi" style="font-size:12px;padding:6px 8px" type="text" placeholder="Licensed tester" id="rpt-bf-vendor"></div>
+        <div><label class="fl">Next test due</label><input class="fi" style="font-size:12px;padding:6px 8px" type="date" id="rpt-bf-next"></div>
+        <div><label class="fl">Test result</label>
+          <select class="fi" style="font-size:12px;padding:6px 8px" id="rpt-bf-result">
+            <option value="">Select...</option>
+            <option>Pass</option><option>Fail — repaired</option><option>Fail — pending repair</option>
+          </select>
+        </div>
+        <div><label class="fl">Report submitted to water authority</label>
+          <select class="fi" style="font-size:12px;padding:6px 8px" id="rpt-bf-submitted">
+            <option value="">Select...</option>
+            <option>Yes</option><option>No</option><option>In progress</option>
+          </select>
+        </div>
+        <div><label class="fl">Report on file</label>
+          <select class="fi" style="font-size:12px;padding:6px 8px" id="rpt-bf-onfile">
+            <option value="">Select...</option>
+            <option>Yes</option><option>No</option><option>Requested</option>
+          </select>
+        </div>
+        <div class="rpt-full"><label class="fl">Notes</label><textarea class="nt" rows="2" id="rpt-bf-notes" placeholder="Device location, serial number, any repairs made..." style="margin-bottom:0"></textarea></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="sec-group-label">— Wrap-up</div>
+<div class="card">
+  <div class="ch" onclick="toggleCard('other-body','other-chev')">
+    <i class="ti ti-message-circle" style="font-size:18px;color:#6b7280"></i>
+    <span class="cht">Other / comments</span>
+    <div class="chr"><i class="ti ti-chevron-down chv" id="other-chev"></i></div>
+  </div>
+  <div class="sb" id="other-body">
+    <div style="padding:12px 1rem;border-bottom:1px solid #e5e5e0">
+      <label class="fl">General comments</label>
+      <textarea class="nt" id="other-general" rows="4" placeholder="Overall observations, tenant concerns, follow-up items, or anything not covered in the sections above..." style="margin-bottom:0"></textarea>
+    </div>
+    <div style="padding:12px 1rem;border-bottom:1px solid #e5e5e0">
+      <label class="fl">Recommended immediate actions</label>
+      <textarea class="nt" id="other-immediate" rows="3" placeholder="Items requiring urgent attention before next visit..." style="margin-bottom:0"></textarea>
+    </div>
+    <div style="padding:12px 1rem;border-bottom:1px solid #e5e5e0">
+      <label class="fl">Recommended long-term repairs / improvements</label>
+      <textarea class="nt" id="other-longterm" rows="3" placeholder="Capital improvements, deferred maintenance, upgrades to plan for..." style="margin-bottom:0"></textarea>
+    </div>
+    <div style="padding:12px 1rem;border-bottom:1px solid #e5e5e0">
+      <label class="fl">Vendor / contractor follow-up needed</label>
+      <textarea class="nt" id="other-vendors" rows="3" placeholder="Which trades need to be called, work to be bid or scheduled..." style="margin-bottom:0"></textarea>
+    </div>
+    <div style="padding:12px 1rem">
+      <label class="fl">Additional photos</label>
+      <div class="photo-strip" id="other-photos"></div>
+      <button class="apb" onclick="document.getElementById('other-file').click()"><i class="ti ti-camera" style="font-size:15px"></i> Add photo</button>
+      <input type="file" accept="image/*" capture="environment" id="other-file" style="display:none" onchange="handleOtherPhoto(this)">
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div style="padding:11px 1rem;border-bottom:1px solid #e5e5e0;display:flex;align-items:center;gap:8px">
+    <i class="ti ti-writing" style="font-size:18px;color:#6b7280"></i>
+    <span style="font-size:15px;font-weight:500">Signature</span>
+  </div>
+  <div style="padding:1rem">
+    <div style="font-size:12px;color:#6b7280;margin-bottom:6px">Inspector signature</div>
+    <div style="border-bottom:1px solid #1a1a1a;height:40px;margin-bottom:4px"></div>
+    <div style="font-size:11px;color:#6b7280" id="sig-name">Inspector name</div>
+    <div style="font-size:11px;color:#6b7280;margin-top:4px" id="sig-date">Date: —</div>
+  </div>
+</div>
+
+<div class="br2">
+  <button class="xb" onclick="resetForm()"><i class="ti ti-refresh"></i> Reset</button>
+  <button class="pb" onclick="window.print()"><i class="ti ti-printer"></i> Print / PDF</button>
+</div>
+
+</div>
+
+<script>
+const SECTIONS=[
+  {id:'parking',icon:'ti-car',title:'Parking lot',items:[
+    'Pavement — no significant cracks or potholes',
+    'Parking space striping visible and legible',
+    'Fire lane striping and signage in place',
+    'ADA spaces — van-accessible space present, signed, and compliant',
+    'ADA ramps and curb cuts in good condition',
+    'Speed bumps and wheel stops intact',
+    'Drainage — no ponding or washout areas',
+    'No oil spills, debris, or litter on pavement',
+    'Traffic flow signage in place and legible',
+    'Parking lot gates / barriers operational',
+    'Bollards — no damage or missing units',
+    'Bicycle racks present and secure (if applicable)'
+  ]},
+  {id:'monument',icon:'ti-sign-right',title:'Monument sign',items:[
+    'Sign face — clean, no damage or graffiti',
+    'All letters, logos, and graphics intact',
+    'Illumination fully operational (all bulbs/LEDs)',
+    'No dark spots or flickering',
+    'Structure — no rust, cracks, or leaning',
+    'Base and footing — no cracking or heaving',
+    'Landscape around sign trimmed and maintained',
+    'Electrical junction box secure and weathertight',
+    'Timer/photocell control functioning correctly'
+  ]},
+  {id:'landscape',icon:'ti-plant-2',title:'Landscape & grounds',items:[
+    'Grass cut and edged — neat and uniform appearance',
+    'Shrubs and hedges trimmed and shaped',
+    'Mulch beds maintained — no bare areas or weeds',
+    'Annual color / seasonal plantings healthy',
+    'Trees — no dead limbs, crossing branches, or lean',
+    'Tree wells clear and mulched',
+    'Irrigation heads — no broken, tilted, or misting heads',
+    'Irrigation controller set to seasonal schedule',
+    'No standing water or soft/soggy areas on grounds',
+    'Walkways and curbs edged cleanly',
+    'Litter and debris removed from all grounds',
+    'Perimeter fence — no damage or gaps'
+  ]},
+  {id:'exterior',icon:'ti-building',title:'Building exterior',items:[
+    'Facade — no cracks, spalling, or staining',
+    'Caulking and sealants around windows/doors intact',
+    'Paint or coating — no peeling or fading',
+    'Building corners and expansion joints sealed',
+    'Foundation — no visible cracks or settlement',
+    'Window glass — no cracks or broken panes',
+    'Window frames and seals — no damage or gaps',
+    'Main entry — accessible route unobstructed, power door operator functional',
+    'Entry doors — ADA-compliant hardware and opening force',
+    'Exterior signage (tenant, address) — legible and intact',
+    'Loading dock / service area — clean and functional',
+    'Dumpster enclosure — clean, gates functional',
+    'Downspouts discharge away from foundation',
+    'No graffiti on any exterior surface'
+  ]},
+  {id:'roof',icon:'ti-home-2',title:'Roof',items:[
+    'No visible ponding water or drainage issues',
+    'Membrane / surface — no cracks, blistering, or tears',
+    'Flashing and seals around all penetrations intact',
+    'Pipe boots and vent collars sealed and undamaged',
+    'Gutters clear — no debris or blockages',
+    'Downspouts clear and securely attached',
+    'Roof drains unobstructed and flowing freely',
+    'Parapet walls — no cracks or mortar loss',
+    'Roof access hatch / ladder — secure and weathertight',
+    'HVAC curbs and equipment bases sealed',
+    'Skylight glazing — clean, no cracks or leaks',
+    'Debris cleared from roof surface'
+  ]},
+  {id:'lobby',icon:'ti-door-enter',title:'Lobby, entry & common areas',items:[
+    'Lobby floors — clean, mats in place, no trip hazards',
+    'Entry glass doors — fingerprint and smudge free',
+    'Building directory — current and legible',
+    'Lobby lighting fully operational',
+    'Ceiling tiles — no stains, sagging, or missing tiles',
+    'Interior walls — no cracks, scuffs, or water staining',
+    'Baseboards and millwork — no damage',
+    'Common area furniture — no damage',
+    'Mail room / package area — organized and secure',
+    'No odors in lobby or entry areas',
+    'ADA signage — braille and tactile signs in place at entry'
+  ]},
+  {id:'lighting',icon:'ti-bulb',title:'Lighting — exterior & interior',items:[
+    'Parking lot pole lights — all operational',
+    'Pole bases — no rust, damage, or graffiti',
+    'Building-mounted wall packs functional',
+    'Canopy and entry lighting operational',
+    'Pathway, bollard, and walkway lighting working',
+    'Landscape accent lighting functional',
+    'Photocell / timer control operating correctly',
+    'No exposed wiring or damaged exterior fixture housings',
+    'All exterior lenses and globes — clean, no yellowing or cracks',
+    'Corridors and hallways fully and evenly lit',
+    'Stairwells fully lit at all landings',
+    'Office and suite areas — no burnt-out lamps',
+    'Restrooms fully lit — no flickering',
+    'Conference rooms and common areas operational',
+    'Storage and mechanical rooms lit adequately',
+    'Exit signs illuminated and visible from all angles',
+    'Emergency / battery backup lights tested',
+    'No flickering, buzzing, or strobing fixtures anywhere',
+    'Lighting controls (dimmers, occupancy sensors) functioning',
+    'Security / flood lighting operational'
+  ]},
+  {id:'restrooms',icon:'ti-door',title:'Restrooms',items:[
+    'Floors — clean, dry, no standing water',
+    'Stalls — doors latch, hardware intact',
+    'Toilet paper dispensers stocked',
+    'Paper towel dispensers or hand dryers functional and stocked',
+    'Soap dispensers functional and filled',
+    'Mirrors — clean, no cracks',
+    'Ventilation fan — operational and clear',
+    'No odors — drains clear and P-traps holding seal',
+    'Baby changing station — clean and functional (if present)',
+    'ADA grab bars — secure and properly positioned',
+    'ADA accessible stall present and compliant — turning radius clear',
+    'Tile grout — no missing or cracked areas'
+  ]},
+  {id:'lifesafety',icon:'ti-shield-check',title:'Life safety & fire protection',items:[
+    'Fire extinguishers — in place, charged, inspected within 12 months',
+    'Fire extinguisher tags current and legible',
+    'Sprinkler heads — no damage, paint, or obstructions within 18"',
+    'Sprinkler control valve — locked open, no leaks',
+    'Fire alarm control panel — no faults or trouble lights',
+    'Smoke detectors — no missing units or low-battery alerts',
+    'Pull stations — accessible and unobstructed',
+    'Strobe and horn devices — no damage',
+    'Stairwell doors — not propped open, self-close and latch',
+    'Emergency exit doors — push hardware operational',
+    'Exit routes — clear, no storage in path of egress',
+    'Knox box — accessible and up to date',
+    'AED device present, charged, and accessible'
+  ]},
+  {id:'security',icon:'ti-lock',title:'Security & access control',items:[
+    'Building entry locks and deadbolts — functional',
+    'Access control card readers — all operational',
+    'Intercom / buzzer system functional',
+    'Exterior doors — none propped open or bypassed',
+    'Security camera system — all cameras online and recording',
+    'Camera lenses clean — no obstructions',
+    'DVR / NVR — recording normally, no storage alerts',
+    'After-hours lighting sufficient for camera coverage',
+    'Panic buttons / duress devices operational (if present)'
+  ]},
+  {id:'maintenance',icon:'ti-tool',title:'Interior building condition',items:[
+    'Corridors — floors, walls, and ceilings in good condition',
+    'Interior doors — open, close, and latch properly',
+    'Door closers — adjusted, doors not slamming',
+    'Floor covering — no torn carpet, loose tile, or trip hazards',
+    'Loading dock levelers — operational',
+    'Roof access and mechanical room doors — locked',
+    'Stairwells — clean, handrails secure, no damage'
+  ]},
+  {id:'plumbing',icon:'ti-droplet',title:'Plumbing & water',items:[
+    'No visible leaks under sinks or at supply lines',
+    'All faucets functional — hot and cold water present',
+    'Water pressure adequate throughout building',
+    'Toilets flush properly — no running or leaking',
+    'Urinals flush and drain properly',
+    'Floor drains — clear, no odors',
+    'Water heater — no leaks, temperature set to 120°F',
+    'Water heater TPR valve present and uncapped',
+    'Backflow preventer — no visible damage, last test date current',
+    'Sump pump — operational, float switch functional',
+    'Hose bibs capped and operational',
+    'Domestic water shutoff location confirmed and accessible'
+  ]},
+  {id:'hvac',icon:'ti-wind',title:'HVAC general',items:[
+    'Thermostats set to appropriate schedule',
+    'Supply and return air registers — no blockages',
+    'Air filters — checked, changed if needed',
+    'No unusual odors (musty, burning) from supply air',
+    'Condensate drain lines — no blockages or overflow',
+    'Economizer dampers — operational',
+    'Building pressurization — doors not difficult to open',
+    'Common areas at comfortable temperature',
+    'Restroom exhaust fans operational and clear',
+    'Kitchen exhaust — hood and fan operational'
+  ]},
+  {id:'electrical',icon:'ti-bolt',title:'Electrical & telecom',items:[
+    'Main electrical room — clean, dry, and unobstructed',
+    'All panel directories legible and accurate',
+    'No tripped breakers in any panel',
+    'No double-tapped breakers visible',
+    'GFCI outlets — test and reset functional in all wet areas',
+    'Outlet cover plates — all in place, no damage',
+    'No extension cords used as permanent wiring',
+    'No open junction boxes or exposed wiring',
+    'Electrical closets locked and access controlled',
+    'Generator — fuel level checked, last test date current',
+    'UPS / battery backup (fire panel, generator controls) — no fault indicators',
+    'Utility meter — no damage or tampering',
+    'MDF / IDF rooms — clean, cool, and dry',
+    'Server racks — organized, no loose cables',
+    'Patch panels — labeled and cables managed',
+    'IT UPS units — charged, no fault indicators',
+    'Telecom room cooling — adequate and functional',
+    'Internet service — active, no outage indicators',
+    'Phone system — operational, no fault lights',
+    'Cable pathways — no damaged conduit or exposed runs'
+  ]},
+  {id:'janitorial',icon:'ti-sparkles',title:'Cleanliness & janitorial',items:[
+    'Common area floors — vacuumed or mopped, no debris',
+    'Stairwells swept and clean',
+    'Break room / kitchen — surfaces, sink, and appliances clean',
+    'Trash and recycling bins emptied — no overflow',
+    'Exterior trash receptacles emptied and clean',
+    'Window sills and ledges — no dust buildup',
+    'Pest control — no evidence of activity',
+    'Odor check — no persistent odors in any area',
+    'Janitorial closet — organized, chemicals properly stored'
+  ]}
+];
+
+const AC_ITEMS=[
+  'Unit ID / tag number recorded',
+  'Air filters clean or replaced',
+  'Condenser coils clean — no debris or fouling',
+  'Evaporator coil — no ice buildup',
+  'Drain pan clear — no standing water or algae',
+  'Condensate drain line flushed and flowing',
+  'Refrigerant level normal — no frost or ice on lines',
+  'Thermostat calibrated and responding correctly',
+  'Belt and pulleys — no cracking or slipping',
+  'Blower wheel clean and balanced',
+  'Electrical connections tight — no signs of arcing',
+  'Contactor and capacitor checked',
+  'Disconnect box secure and labeled',
+  'Last service date current — tag visible on unit',
+  'Unusual noises or vibrations noted'
+];
+
+const ELEC_ITEMS=[
+  'Panel directory / labels legible and accurate',
+  'All breakers in proper position — no trips',
+  'Clearance maintained — 36" in front of panel',
+  'No evidence of overheating, scorching, or burn marks',
+  'No double-tapped breakers',
+  'Grounding conductors visible and intact',
+  'No moisture, rust, or water intrusion in panel',
+  'Conduit and wiring secure — no exposed conductors',
+  'GFCI breakers test and reset properly',
+  'Arc fault breakers operational',
+  'Safety warning signage posted',
+  'Fire suppression / extinguisher present in room',
+  'Door self-closes and locks — access controlled',
+  'Room clean, dry, and free of stored materials',
+  'Ventilation adequate — no excessive heat in room'
+];
+
+const ELEV_ITEMS=[
+  'Cab — clean, no damage to walls, floor, or ceiling',
+  'Cab lighting fully functional',
+  'Door operation — opens and closes smoothly, no hesitation',
+  'Door safety edge and reversal device functional',
+  'All floor buttons and indicators operational',
+  'Emergency phone — operational and tested',
+  'Emergency lighting in cab functional',
+  'Floor leveling — cab stops flush with floor',
+  'Certificate of inspection current and posted in cab',
+  'No unusual noises during operation',
+  'Machine room — clean, dry, and unobstructed',
+  'Machine room lighting functional',
+  'Machine room door locked — access controlled',
+  'Controller cabinet — no fault indicators or alarms',
+  'No oil leaks from hydraulic unit or lines (if hydraulic)',
+  'Machine room temperature within acceptable range'
+];
+
+let state={},photos={},otherPhotos=[],acCount=0,elecCount=0,elevCount=0,pmCount=0,pmUnits=[];
+
+function makeId(){return Math.random().toString(36).slice(2,9)}
+
+function hasDetail(key){
+  const s=state[key],p=photos[key];
+  return(s&&s.notes&&s.notes.trim())||(p&&p.length>0);
+}
+
+function renderItem(sid,label,idx){
+  const key=sid+'_'+idx;
+  if(!state[key])state[key]={status:null,priority:null,notes:''};
+  if(!photos[key])photos[key]=[];
+  const s=state[key],ph=photos[key],hasD=hasDetail(key),detOpen=s._detOpen||false;
+  const phCount=ph.length,hasNote=s.notes&&s.notes.trim();
+  const detLabel=phCount>0?phCount+' photo'+(phCount>1?'s':'')+(hasNote?' + note':''):(hasNote?'Note added':'Add note / photo');
+  return `<div class="item" id="item-${key}">
+    <div class="item-top">
+      <div class="dot ${hasD?'on':''}" id="dot-${key}"></div>
+      <div style="flex:1">
+        <div class="il">${label}</div>
+        <div class="tg">
+          <div class="t pass ${s.status==='pass'?'on':''}" onclick="setS('${key}','pass')">Pass</div>
+          <div class="t fail ${s.status==='fail'?'on':''}" onclick="setS('${key}','fail')">Fail</div>
+          <div class="t na ${s.status==='na'?'on':''}" onclick="setS('${key}','na')">N/A</div>
+        </div>
+        ${s.status==='fail'?`<div class="pr">
+          <div class="p high ${s.priority==='high'?'on':''}" onclick="setP('${key}','high')">High</div>
+          <div class="p med ${s.priority==='med'?'on':''}" onclick="setP('${key}','med')">Medium</div>
+          <div class="p low ${s.priority==='low'?'on':''}" onclick="setP('${key}','low')">Low</div>
+        </div>`:''}
+        <div class="det-area">
+          <div class="det-tog" onclick="toggleDetail('${key}')">
+            <i class="ti ti-chevron-down det-tog-ic ${detOpen?'open':''}" id="dtic-${key}"></i>
+            <span class="det-tog-lbl" id="dtlbl-${key}">${detLabel}</span>
+          </div>
+          <div class="det-body ${detOpen?'open':''}" id="detb-${key}">
+            <textarea class="nt" rows="2" placeholder="Add a note..." onchange="setN('${key}',this.value)">${s.notes||''}</textarea>
+            <div class="photo-strip" id="ps-${key}">
+              ${ph.map((p,i)=>`<div class="pt"><img src="${p}" alt="photo ${i+1}"><button class="pdel" onclick="delPhoto('${key}',${i})"><i class="ti ti-x"></i></button></div>`).join('')}
+            </div>
+            <button class="apb" onclick="document.getElementById('pf-${key}').click()"><i class="ti ti-camera" style="font-size:15px"></i> Add photo</button>
+            <input type="file" accept="image/*" capture="environment" id="pf-${key}" style="display:none" onchange="handlePhoto('${key}',this)">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleDetail(key){
+  if(!state[key])state[key]={status:null,priority:null,notes:''};
+  state[key]._detOpen=!state[key]._detOpen;
+  const b=document.getElementById('detb-'+key),ic=document.getElementById('dtic-'+key);
+  if(b)b.classList.toggle('open',state[key]._detOpen);
+  if(ic)ic.classList.toggle('open',state[key]._detOpen);
+}
+
+function handlePhoto(key,input){
+  const file=input.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    if(!photos[key])photos[key]=[];
+    photos[key].push(e.target.result);
+    if(!state[key])state[key]={status:null,priority:null,notes:''};
+    state[key]._detOpen=true;
+    updateItemPhotos(key);updateDot(key);
+  };
+  r.readAsDataURL(file);input.value='';
+}
+
+function handleOtherPhoto(input){
+  const file=input.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{otherPhotos.push(e.target.result);renderOtherPhotos();};
+  r.readAsDataURL(file);input.value='';
+}
+
+function renderOtherPhotos(){
+  const strip=document.getElementById('other-photos');if(!strip)return;
+  strip.innerHTML=otherPhotos.map((p,i)=>`<div class="pt"><img src="${p}" alt="photo ${i+1}"><button class="pdel" onclick="delOtherPhoto(${i})"><i class="ti ti-x"></i></button></div>`).join('');
+}
+
+function delOtherPhoto(idx){otherPhotos.splice(idx,1);renderOtherPhotos();}
+
+function delPhoto(key,idx){
+  if(!photos[key])return;
+  photos[key].splice(idx,1);
+  updateItemPhotos(key);updateDot(key);
+}
+
+function updateItemPhotos(key){
+  const strip=document.getElementById('ps-'+key),lbl=document.getElementById('dtlbl-'+key);
+  const ph=photos[key]||[],s=state[key]||{};
+  if(strip)strip.innerHTML=ph.map((p,i)=>`<div class="pt"><img src="${p}" alt="photo ${i+1}"><button class="pdel" onclick="delPhoto('${key}',${i})"><i class="ti ti-x"></i></button></div>`).join('');
+  if(lbl){
+    const hasNote=s.notes&&s.notes.trim();
+    lbl.textContent=ph.length>0?ph.length+' photo'+(ph.length>1?'s':'')+(hasNote?' + note':''):(hasNote?'Note added':'Add note / photo');
+  }
+}
+
+function updateDot(key){
+  const dot=document.getElementById('dot-'+key);
+  if(dot)dot.classList.toggle('on',hasDetail(key));
+}
+
+function secBadge(sid,items){
+  let pass=0,fail=0;
+  items.forEach((_,i)=>{const s=state[sid+'_'+i];if(!s)return;if(s.status==='pass')pass++;else if(s.status==='fail')fail++;});
+  const r=pass+fail;
+  if(fail>0)return`<span class="badge bf">${fail} issue${fail>1?'s':''}</span>`;
+  if(r===0)return`<span class="badge bn">Not started</span>`;
+  return`<span class="badge bp">${pass}/${r} passed</span>`;
+}
+
+function toggleCard(bodyId,chevId){
+  const b=document.getElementById(bodyId),c=document.getElementById(chevId);
+  if(b)b.classList.toggle('open');if(c)c.classList.toggle('open');
+}
+
+function renderStatic(){
+  document.getElementById('static-sections').innerHTML=SECTIONS.map(sec=>{
+    const bid='body-'+sec.id,cid='chev-'+sec.id;
+    return`<div class="card">
+      <div class="ch" onclick="toggleCard('${bid}','${cid}')">
+        <i class="ti ${sec.icon}" style="font-size:18px;color:#6b7280"></i>
+        <span class="cht">${sec.title}</span>
+        <div class="chr">${secBadge(sec.id,sec.items)}<i class="ti ti-chevron-down chv" id="${cid}"></i></div>
+      </div>
+      <div class="sb" id="${bid}">${sec.items.map((item,i)=>renderItem(sec.id,item,i)).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderPM(){
+  const el=document.getElementById('pm-units');
+  if(!pmUnits.length){el.innerHTML='<div style="padding:10px 1rem;font-size:13px;color:#6b7280">No PM records added.</div>';return;}
+  el.innerHTML=pmUnits.map(u=>`
+    <div style="border-bottom:1px solid #e5e5e0">
+      <div style="padding:8px 1rem;background:#fafaf8;display:flex;align-items:center;gap:8px">
+        <input style="flex:1;font-size:12px;padding:5px 8px;border:1px solid #d1d5db;border-radius:8px;background:#fff;color:#1a1a1a;font-family:inherit" placeholder="Unit name / ID (e.g. RTU-1, AHU-2)" value="${u.name}" oninput="updPM('${u.id}','name',this.value)">
+        <button class="rb" onclick="remPM('${u.id}')"><i class="ti ti-trash"></i> Remove</button>
+      </div>
+      <div class="pmf">
+        <div class="pml">Last PM completed</div>
+        <div><label class="fl">Date</label><input class="fi" style="font-size:12px;padding:6px 8px" type="date" value="${u.lastDate}" oninput="updPM('${u.id}','lastDate',this.value)"></div>
+        <div><label class="fl">Performed by</label><input class="fi" style="font-size:12px;padding:6px 8px" type="text" placeholder="Contractor / tech" value="${u.lastBy}" oninput="updPM('${u.id}','lastBy',this.value)"></div>
+        <div style="grid-column:1/-1"><label class="fl">Work performed</label><textarea class="nt" rows="2" placeholder="Filter change, coil cleaning, belt inspection..." oninput="updPM('${u.id}','lastWork',this.value)">${u.lastWork}</textarea></div>
+      </div>
+      <div class="pmf" style="border-top:1px solid #e5e5e0">
+        <div class="pml">Next PM scheduled</div>
+        <div><label class="fl">Date</label><input class="fi" style="font-size:12px;padding:6px 8px" type="date" value="${u.nextDate}" oninput="updPM('${u.id}','nextDate',this.value)"></div>
+        <div><label class="fl">Frequency</label>
+          <select class="fi" style="font-size:12px;padding:6px 8px" oninput="updPM('${u.id}','freq',this.value)">
+            <option value="">Select...</option>
+            <option value="Monthly" ${u.freq==='Monthly'?'selected':''}>Monthly</option>
+            <option value="Quarterly" ${u.freq==='Quarterly'?'selected':''}>Quarterly</option>
+            <option value="Semi-annual" ${u.freq==='Semi-annual'?'selected':''}>Semi-annual</option>
+            <option value="Annual" ${u.freq==='Annual'?'selected':''}>Annual</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1"><label class="fl">Open items / follow-up</label><textarea class="nt" rows="2" placeholder="Issues found, parts ordered, callbacks..." oninput="updPM('${u.id}','nextNotes',this.value)">${u.nextNotes}</textarea></div>
+      </div>
+    </div>`).join('');
+}
+
+function addPM(){pmCount++;pmUnits.push({id:makeId(),name:'HVAC unit '+pmCount,lastDate:'',lastBy:'',lastWork:'',nextDate:'',freq:'',nextNotes:''});renderPM();}
+function remPM(id){pmUnits=pmUnits.filter(u=>u.id!==id);renderPM();}
+function updPM(id,f,v){const u=pmUnits.find(u=>u.id===id);if(u)u[f]=v;}
+
+function renderAC(){
+  const uids=[...new Set(Object.keys(state).filter(k=>k.startsWith('ac_')&&!k.endsWith('_n')&&!k.includes('_detOpen')).map(k=>k.split('_')[1]))];
+  document.getElementById('ac-sections').innerHTML=uids.map((uid,ux)=>{
+    const name=state['ac_'+uid+'_n']||'AC unit '+(ux+1);
+    const bid='acbody-'+uid,cid='acchev-'+uid;
+    return`<div class="card">
+      <div class="ch" onclick="toggleCard('${bid}','${cid}')">
+        <i class="ti ti-wind" style="font-size:18px;color:#6b7280"></i>
+        <span class="cht">${name}</span>
+        <div class="chr">${secBadge('ac_'+uid,AC_ITEMS)}<i class="ti ti-chevron-down chv" id="${cid}"></i><button class="rb" onclick="event.stopPropagation();remUnit('ac','${uid}')"><i class="ti ti-trash"></i></button></div>
+      </div>
+      <div class="sb" id="${bid}">
+        <div class="uh"><input class="fi" style="font-size:12px;padding:5px 8px" placeholder="Unit name / ID (e.g. RTU-1, Rooftop North)" value="${name}" oninput="renUnit('ac','${uid}',this.value)"></div>
+        ${AC_ITEMS.map((item,i)=>renderItem('ac_'+uid,item,i)).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderElec(){
+  const uids=[...new Set(Object.keys(state).filter(k=>k.startsWith('el_')&&!k.endsWith('_n')&&!k.includes('_detOpen')).map(k=>k.split('_')[1]))];
+  document.getElementById('elec-sections').innerHTML=uids.map((uid,ux)=>{
+    const name=state['el_'+uid+'_n']||'Electrical room '+(ux+1);
+    const bid='elbody-'+uid,cid='elchev-'+uid;
+    return`<div class="card">
+      <div class="ch" onclick="toggleCard('${bid}','${cid}')">
+        <i class="ti ti-bolt" style="font-size:18px;color:#6b7280"></i>
+        <span class="cht">${name}</span>
+        <div class="chr">${secBadge('el_'+uid,ELEC_ITEMS)}<i class="ti ti-chevron-down chv" id="${cid}"></i><button class="rb" onclick="event.stopPropagation();remUnit('elec','${uid}')"><i class="ti ti-trash"></i></button></div>
+      </div>
+      <div class="sb" id="${bid}">
+        <div class="uh"><input class="fi" style="font-size:12px;padding:5px 8px" placeholder="Room name / ID (e.g. Main MDF, Basement Panel A)" value="${name}" oninput="renUnit('elec','${uid}',this.value)"></div>
+        ${ELEC_ITEMS.map((item,i)=>renderItem('el_'+uid,item,i)).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderElev(){
+  const uids=[...new Set(Object.keys(state).filter(k=>k.startsWith('ev_')&&!k.endsWith('_n')&&!k.includes('_detOpen')).map(k=>k.split('_')[1]))];
+  document.getElementById('elev-sections').innerHTML=uids.map((uid,ux)=>{
+    const name=state['ev_'+uid+'_n']||'Elevator '+(ux+1);
+    const bid='evbody-'+uid,cid='evchev-'+uid;
+    return`<div class="card">
+      <div class="ch" onclick="toggleCard('${bid}','${cid}')">
+        <i class="ti ti-elevator" style="font-size:18px;color:#6b7280"></i>
+        <span class="cht">${name}</span>
+        <div class="chr">${secBadge('ev_'+uid,ELEV_ITEMS)}<i class="ti ti-chevron-down chv" id="${cid}"></i><button class="rb" onclick="event.stopPropagation();remUnit('elev','${uid}')"><i class="ti ti-trash"></i></button></div>
+      </div>
+      <div class="sb" id="${bid}">
+        <div class="uh"><input class="fi" style="font-size:12px;padding:5px 8px" placeholder="Elevator name / ID (e.g. Elevator 1, North Bank)" value="${name}" oninput="renUnit('elev','${uid}',this.value)"></div>
+        ${ELEV_ITEMS.map((item,i)=>renderItem('ev_'+uid,item,i)).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateScore(){
+  let pass=0,fail=0,high=0;
+  Object.entries(state).forEach(([k,v])=>{
+    if(k.endsWith('_n')||k.includes('_detOpen'))return;
+    if(typeof v!=='object'||!v.status)return;
+    if(v.status==='pass')pass++;
+    if(v.status==='fail'){fail++;if(v.priority==='high')high++;}
+  });
+  const total=pass+fail;
+  document.getElementById('spct').textContent=total===0?'—':Math.round(pass/total*100)+'%';
+  document.getElementById('scnt').textContent=total===0?'No items rated':`${pass} / ${total} passed`;
+  document.getElementById('icnt').textContent=fail;
+  document.getElementById('hcnt').textContent=high+' high priority';
+}
+
+function updateSig(){
+  document.getElementById('sig-name').textContent=document.getElementById('inspector').value||'Inspector name';
+  document.getElementById('sig-date').textContent='Date: '+(document.getElementById('idate').value||'—');
+}
+
+function render(){renderStatic();renderPM();renderAC();renderElec();renderElev();updateScore();}
+
+function setS(key,val){
+  if(!state[key])state[key]={status:null,priority:null,notes:''};
+  const prev=state[key]._detOpen;
+  state[key].status=state[key].status===val?null:val;
+  if(state[key].status!=='fail')state[key].priority=null;
+  state[key]._detOpen=prev;
+  render();
+}
+function setP(key,val){
+  if(!state[key])state[key]={status:'fail',priority:null,notes:''};
+  const prev=state[key]._detOpen;
+  state[key].priority=state[key].priority===val?null:val;
+  state[key]._detOpen=prev;
+  render();
+}
+function setN(key,val){
+  if(!state[key])state[key]={status:null,priority:null,notes:''};
+  state[key].notes=val;
+  updateDot(key);updateItemPhotos(key);
+}
+
+function addUnit(type){
+  const uid=makeId();
+  if(type==='ac'){
+    acCount++;state['ac_'+uid+'_n']='AC unit '+acCount;
+    AC_ITEMS.forEach((_,i)=>{state['ac_'+uid+'_'+i]={status:null,priority:null,notes:''};photos['ac_'+uid+'_'+i]=[];});
+  } else if(type==='elec'){
+    elecCount++;state['el_'+uid+'_n']='Electrical room '+elecCount;
+    ELEC_ITEMS.forEach((_,i)=>{state['el_'+uid+'_'+i]={status:null,priority:null,notes:''};photos['el_'+uid+'_'+i]=[];});
+  } else {
+    elevCount++;state['ev_'+uid+'_n']='Elevator '+elevCount;
+    ELEV_ITEMS.forEach((_,i)=>{state['ev_'+uid+'_'+i]={status:null,priority:null,notes:''};photos['ev_'+uid+'_'+i]=[];});
+  }
+  render();
+}
+
+function remUnit(type,uid){
+  const p=type==='ac'?'ac_'+uid:type==='elec'?'el_'+uid:'ev_'+uid;
+  Object.keys(state).filter(k=>k.startsWith(p)).forEach(k=>delete state[k]);
+  Object.keys(photos).filter(k=>k.startsWith(p)).forEach(k=>delete photos[k]);
+  render();
+}
+function renUnit(type,uid,val){
+  const p=type==='ac'?'ac_':type==='elec'?'el_':'ev_';
+  state[p+uid+'_n']=val;
+}
+
+function resetForm(){
+  if(!confirm('Reset all inspection data? This cannot be undone.'))return;
+  state={};photos={};otherPhotos=[];acCount=0;elecCount=0;elevCount=0;pmCount=0;pmUnits=[];
+  ['building','inspector','other-general','other-immediate','other-longterm','other-vendors',
+   'rpt-fa-vendor','rpt-fa-notes','rpt-sp-notes','rpt-el-vendor','rpt-el-notes','rpt-bf-vendor','rpt-bf-notes']
+    .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['rpt-fa-date','rpt-fa-next','rpt-sp-date','rpt-sp-next','rpt-sp-trip','rpt-sp-tripnext',
+   'rpt-el-date','rpt-el-next','rpt-bf-date','rpt-bf-next']
+    .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['rpt-fa-onfile','rpt-sp-onfile','rpt-el-posted','rpt-bf-result','rpt-bf-submitted','rpt-bf-onfile']
+    .forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
+  document.getElementById('idate').value=new Date().toISOString().slice(0,10);
+  renderOtherPhotos();render();updateSig();
+}
+
+document.getElementById('idate').value=new Date().toISOString().slice(0,10);
+render();
+</script>
+</body>
+</html>
